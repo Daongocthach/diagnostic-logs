@@ -432,6 +432,14 @@
       word-break: break-word;
     }
 
+    .route-cell {
+      max-width: 340px;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      line-height: 1.45;
+    }
+
     .truncate {
       max-width: 340px;
       white-space: nowrap;
@@ -900,7 +908,7 @@
             <div class="message">${escapeHtml(detail.message)}</div>
             <div class="muted">Source: ${escapeHtml(detail.source)} · Method: ${escapeHtml(detail.method)}</div>
           </td>
-          <td class="truncate" title="${escapeHtml(detail.route)}">${escapeHtml(detail.route)}</td>
+          <td class="route-cell" title="${escapeHtml(detail.route)}">${escapeHtml(detail.route)}</td>
           <td>${escapeHtml(detail.statusCode)}</td>
           <td class="truncate" title="${escapeHtml(item.id)}">${escapeHtml(item.id || '-')}</td>
           <td class="details-cell-action">
