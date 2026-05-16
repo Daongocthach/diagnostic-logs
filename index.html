@@ -1,0 +1,1103 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finepro - System Error Logs</title>
+  <link rel="icon" href="https://www.finepro.net/favicon.ico" type="image/x-icon" />
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --bg-2: #ffffff;
+      --panel: rgba(255, 255, 255, 0.94);
+      --panel-2: rgba(248, 250, 255, 0.98);
+      --border: rgba(15, 23, 42, 0.09);
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #111827;
+      --accent-2: #374151;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --ok: #059669;
+      --shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+      --radius: 16px;
+      --radius-sm: 12px;
+      --max: 1360px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 28%),
+        radial-gradient(circle at top right, rgba(17, 24, 39, 0.05), transparent 26%),
+        linear-gradient(180deg, #fbfcff 0%, #f5f7fb 42%, #edf1f7 100%);
+      color: var(--text);
+    }
+
+    .page {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 16px 0 24px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+      padding: 20px 22px 22px;
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 255, 0.96));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .title-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(26px, 3vw, 33px);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr 1fr auto auto;
+      gap: 18px 16px;
+      align-items: end;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field label {
+      font-size: 13px;
+      color: #4b5563;
+      letter-spacing: 0;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+      font-size: 14px;
+    }
+
+    .field input:focus {
+      border-color: rgba(17, 24, 39, 0.24);
+      box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.06);
+    }
+
+    .field input::placeholder { color: #9ca3af; }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: #ffffff;
+      background: linear-gradient(135deg, #202633, #111827);
+      box-shadow: 0 10px 20px rgba(17, 24, 39, 0.16);
+      transition: transform 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .ghost {
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .content-shell {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      flex-direction: column;
+    }
+
+    #content {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      flex-direction: column;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 16px 18px 14px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(248, 250, 255, 0.8);
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .panel-head .meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1040px;
+    }
+
+    thead th {
+      text-align: left;
+      font-size: 12px;
+      color: #8b94a7;
+      font-weight: 600;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      background: rgba(248, 250, 255, 0.92);
+    }
+
+    thead th:last-child {
+      text-align: right;
+      padding-right: 24px;
+      width: 84px;
+    }
+
+    tbody td {
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    tbody td:last-child {
+      text-align: right;
+      padding-right: 24px;
+      white-space: nowrap;
+    }
+
+    .details-cell-action {
+      width: 84px;
+      text-align: center !important;
+      padding-right: 18px !important;
+    }
+
+    tbody tr:hover {
+      background: rgba(37, 99, 235, 0.04);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0;
+      background: rgba(15, 23, 42, 0.04);
+      border: 1px solid rgba(15, 23, 42, 0.06);
+    }
+
+    .badge.error { color: #b91c1c; background: rgba(220, 38, 38, 0.10); border-color: rgba(220, 38, 38, 0.14); }
+    .badge.warn { color: #b45309; background: rgba(217, 119, 6, 0.10); border-color: rgba(217, 119, 6, 0.14); }
+    .badge.ok { color: #047857; background: rgba(5, 150, 105, 0.10); border-color: rgba(5, 150, 105, 0.14); }
+
+    .message {
+      font-weight: 600;
+      line-height: 1.35;
+      margin-bottom: 6px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+      word-break: break-word;
+    }
+
+    .log-mini {
+      display: grid;
+      gap: 6px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.04);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      font-size: 12px;
+      color: #334155;
+    }
+
+    .pagination {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-top: 1px solid var(--border);
+      background: rgba(248, 250, 255, 0.82);
+    }
+
+    .pager {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .pager button {
+      min-width: 44px;
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+
+    .pager .page-btn {
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    .pager .page-btn.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #ffffff;
+      border-color: transparent;
+      font-weight: 800;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .loading,
+    .empty,
+    .error-box {
+      padding: 28px 18px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .error-box {
+      color: #b91c1c;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(37, 99, 235, 0.18);
+      border-top-color: var(--accent);
+      animation: spin 0.8s linear infinite;
+      vertical-align: -3px;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .mobile-cards {
+      display: none;
+      padding: 14px;
+      gap: 12px;
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .card-title {
+      font-weight: 800;
+      line-height: 1.35;
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card-item {
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.03);
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      min-width: 0;
+    }
+
+    .card-item .k {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .card-item .v {
+      font-size: 13px;
+      word-break: break-word;
+    }
+
+    .truncate {
+      max-width: 340px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .detail-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border-radius: 10px;
+      background: rgba(17, 24, 39, 0.06);
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: none;
+      white-space: nowrap;
+    }
+
+    .detail-toggle:hover {
+      transform: none;
+      background: rgba(17, 24, 39, 0.09);
+    }
+
+    .detail-toggle svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+      transition: transform 0.15s ease;
+    }
+
+    .detail-toggle[data-open="true"] svg {
+      transform: rotate(90deg);
+    }
+
+    .details-row td {
+      padding: 0 18px 16px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+      background: rgba(248, 250, 255, 0.72);
+    }
+
+    .details-cell {
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.96);
+      display: grid;
+      gap: 14px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .details-item {
+      padding: 12px;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.03);
+      min-width: 0;
+    }
+
+    .details-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #6b7280;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .details-json {
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.55;
+      color: #111827;
+    }
+
+    @media (max-width: 980px) {
+      .filters { grid-template-columns: 1fr 1fr; }
+      .actions { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 720px) {
+      .page { width: min(100% - 14px, var(--max)); padding-top: 12px; }
+      .hero { padding: 16px; }
+      .filters { grid-template-columns: 1fr; }
+      .panel-head,
+      .pagination {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+      .table-wrap { display: none; }
+      .mobile-cards { display: grid; }
+      .card-grid { grid-template-columns: 1fr; }
+      .panel-head { align-items: flex-start; flex-direction: column; }
+      .details-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (min-width: 721px) {
+      html, body {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        display: flex;
+        min-height: 100dvh;
+      }
+
+      .page {
+        display: flex;
+        flex-direction: column;
+        height: 100dvh;
+        min-height: 0;
+        overflow: hidden;
+        padding-bottom: 16px;
+      }
+
+      .hero {
+        flex: 0 0 auto;
+      }
+
+      .panel {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .panel-head {
+        flex: 0 0 auto;
+      }
+
+      .pagination {
+        flex: 0 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="title-row">
+        <div>
+          <h1>Finepro - System Error Logs</h1>
+          <p class="subtitle">Browse mobile errors by `appName`, filter by date range, and paginate in a single HTML file.</p>
+        </div>
+        <div class="top-actions">
+          <button id="refreshBtn" class="ghost">Refresh</button>
+        </div>
+      </div>
+
+      <div class="filters">
+        <div class="field">
+          <label for="appName">App name</label>
+          <input id="appName" type="text" placeholder="Fineprojects" />
+        </div>
+        <div class="field">
+          <label for="timeGte">Start date</label>
+          <input id="timeGte" type="date" />
+        </div>
+        <div class="field">
+          <label for="timeLte">End date</label>
+          <input id="timeLte" type="date" />
+        </div>
+        <div class="actions">
+          <button id="searchBtn">Search</button>
+          <button id="resetBtn" class="ghost">Clear filters</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <h2>Error list</h2>
+            <span class="badge" id="totalItems">0 records</span>
+          </div>
+          <div class="meta" id="resultMeta">Waiting for query</div>
+        </div>
+        <div class="meta" id="lastQueryMeta"></div>
+      </div>
+
+      <div id="content" class="content-shell">
+        <div class="loading" id="loadingBox" style="display:none;">
+          <span class="spinner"></span>Loading data...
+        </div>
+        <div class="error-box" id="errorBox" style="display:none;"></div>
+        <div class="empty" id="emptyBox" style="display:none;">No matching data found.</div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>App</th>
+                <th>Version</th>
+                <th>Platform</th>
+                <th>Level</th>
+                <th>Message</th>
+                <th>Route</th>
+                <th>Status</th>
+                <th>ID</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="mobile-cards" id="mobileCards"></div>
+      </div>
+
+      <div class="pagination">
+        <div class="footer-note" id="pageNote">No data yet</div>
+        <div class="pager" id="pager"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE = 'http://192.168.8.67:8081/api/v1/mobile_error_logs/';
+    const DEFAULT_PAGE_SIZE = 10;
+
+    const els = {
+      appName: document.getElementById('appName'),
+      timeGte: document.getElementById('timeGte'),
+      timeLte: document.getElementById('timeLte'),
+      searchBtn: document.getElementById('searchBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      refreshBtn: document.getElementById('refreshBtn'),
+      tableBody: document.getElementById('tableBody'),
+      mobileCards: document.getElementById('mobileCards'),
+      loadingBox: document.getElementById('loadingBox'),
+      errorBox: document.getElementById('errorBox'),
+      emptyBox: document.getElementById('emptyBox'),
+      pager: document.getElementById('pager'),
+      pageNote: document.getElementById('pageNote'),
+      resultMeta: document.getElementById('resultMeta'),
+      lastQueryMeta: document.getElementById('lastQueryMeta'),
+      totalItems: document.getElementById('totalItems'),
+    };
+
+    const state = {
+      page: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+      q: '',
+      timeGte: '',
+      timeLte: '',
+      data: [],
+      pagination: null,
+    };
+
+    function parseDateValue(input) {
+      if (!input) return null;
+      const raw = String(input).trim();
+      let date;
+
+      if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+        const [year, month, day] = raw.split('-').map(Number);
+        date = new Date(year, month - 1, day, 12, 0, 0, 0);
+      } else {
+        const normalized = raw.replace(' ', 'T');
+        date = new Date(normalized);
+      }
+
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function toDateInputValue(input) {
+      const date = parseDateValue(input);
+      if (!date) return '';
+      const pad = n => String(n).padStart(2, '0');
+      const year = date.getFullYear();
+      const month = pad(date.getMonth() + 1);
+      const day = pad(date.getDate());
+      return `${year}-${month}-${day}`;
+    }
+
+    function fromDateInputValue(value, boundary) {
+      if (!value) return '';
+      const date = parseDateValue(value);
+      if (!date) return '';
+      const pad = n => String(n).padStart(2, '0');
+      if (boundary === 'start') {
+        date.setHours(0, 0, 0, 0);
+      } else if (boundary === 'end') {
+        date.setHours(23, 59, 59, 999);
+      }
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+    }
+
+    function setLoading(isLoading) {
+      els.loadingBox.style.display = isLoading ? 'block' : 'none';
+      els.searchBtn.disabled = isLoading;
+      els.resetBtn.disabled = isLoading;
+      els.refreshBtn.disabled = isLoading;
+    }
+
+    function setError(message) {
+      els.errorBox.textContent = message;
+      els.errorBox.style.display = message ? 'block' : 'none';
+    }
+
+    function setEmpty(isEmpty) {
+      els.emptyBox.style.display = isEmpty ? 'block' : 'none';
+    }
+
+    function buildUrl(page = 1) {
+      const url = new URL(API_BASE);
+      url.searchParams.set('page', String(page));
+      url.searchParams.set('page_size', String(state.pageSize));
+      if (state.q.trim()) url.searchParams.set('q', state.q.trim());
+      if (state.timeGte) url.searchParams.set('time_gte', state.timeGte);
+      if (state.timeLte) url.searchParams.set('time_lte', state.timeLte);
+      return url.toString();
+    }
+
+    function normalizeErrorDetail(detail = {}) {
+      return {
+        appName: detail.appName ?? '-',
+        appVersion: detail.appVersion ?? '-',
+        buildVersion: detail.buildVersion ?? '-',
+        platform: detail.platform ?? '-',
+        level: detail.level ?? '-',
+        source: detail.source ?? '-',
+        message: detail.message ?? '-',
+        route: detail.route ?? detail.url ?? '-',
+        method: detail.method ?? '-',
+        statusCode: detail.statusCode ?? '-',
+        payload: detail.payload ?? null,
+        response: detail.response ?? null,
+        meta: detail.meta ?? null,
+      };
+    }
+
+    function badgeClass(level) {
+      const value = String(level || '').toLowerCase();
+      if (value.includes('error') || value.includes('fatal')) return 'error';
+      if (value.includes('warn')) return 'warn';
+      return 'ok';
+    }
+
+    function formatJson(value) {
+      if (value == null) return '-';
+      if (typeof value === 'string') return value;
+      try {
+        return JSON.stringify(value);
+      } catch {
+        return String(value);
+      }
+    }
+
+    function formatPrettyJson(value) {
+      if (value == null) return '-';
+      if (typeof value === 'string') return value;
+      try {
+        return JSON.stringify(value, null, 2);
+      } catch {
+        return String(value);
+      }
+    }
+
+    function fmtTime(value) {
+      if (!value) return '-';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value);
+      return new Intl.DateTimeFormat('vi-VN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      }).format(date);
+    }
+
+    function renderPagination(pagination) {
+      els.pager.innerHTML = '';
+      if (!pagination || !pagination.total_pages) return;
+
+      const current = Number(pagination.current_page || 1);
+      const total = Number(pagination.total_pages || 1);
+      const pages = [];
+
+      const add = page => {
+        if (!pages.includes(page) && page >= 1 && page <= total) pages.push(page);
+      };
+
+      add(1);
+      add(current - 1);
+      add(current);
+      add(current + 1);
+      add(total);
+
+      pages.sort((a, b) => a - b);
+
+      let last = 0;
+      pages.forEach(page => {
+        if (page - last > 1) {
+          const gap = document.createElement('span');
+          gap.className = 'meta';
+          gap.textContent = '...';
+          els.pager.appendChild(gap);
+        }
+        const btn = document.createElement('button');
+        btn.className = 'page-btn' + (page === current ? ' active' : '');
+        btn.textContent = page;
+        btn.disabled = page === current;
+        btn.addEventListener('click', () => fetchLogs(page));
+        els.pager.appendChild(btn);
+        last = page;
+      });
+
+        if (pagination.previous_page) {
+        const prev = document.createElement('button');
+        prev.className = 'page-btn';
+        prev.textContent = 'Prev';
+        prev.addEventListener('click', () => fetchLogs(current - 1));
+        els.pager.prepend(prev);
+      }
+
+      if (pagination.next_page) {
+        const next = document.createElement('button');
+        next.className = 'page-btn';
+        next.textContent = 'Next';
+        next.addEventListener('click', () => fetchLogs(current + 1));
+        els.pager.appendChild(next);
+      }
+    }
+
+    function renderRows(items) {
+      els.tableBody.innerHTML = '';
+      els.mobileCards.innerHTML = '';
+
+      items.forEach(item => {
+        const detail = normalizeErrorDetail(item.error_detail);
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escapeHtml(fmtTime(item.created))}</td>
+          <td><strong>${escapeHtml(detail.appName)}</strong></td>
+          <td>${escapeHtml(detail.appVersion)}<div class="muted">Build ${escapeHtml(detail.buildVersion)}</div></td>
+          <td><span class="badge ${escapeHtml(badgeClass(detail.platform))}">${escapeHtml(detail.platform)}</span></td>
+          <td><span class="badge ${escapeHtml(badgeClass(detail.level))}">${escapeHtml(detail.level)}</span></td>
+          <td>
+            <div class="message">${escapeHtml(detail.message)}</div>
+            <div class="muted">Source: ${escapeHtml(detail.source)} · Method: ${escapeHtml(detail.method)}</div>
+          </td>
+          <td class="truncate" title="${escapeHtml(detail.route)}">${escapeHtml(detail.route)}</td>
+          <td>${escapeHtml(detail.statusCode)}</td>
+          <td class="truncate" title="${escapeHtml(item.id)}">${escapeHtml(item.id || '-')}</td>
+          <td class="details-cell-action">
+            <button class="detail-toggle" type="button" data-detail-toggle="1" aria-label="Expand details" aria-expanded="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 6l6 6-6 6"></path>
+              </svg>
+            </button>
+          </td>
+        `;
+        els.tableBody.appendChild(tr);
+
+        const detailsRow = document.createElement('tr');
+        detailsRow.className = 'details-row';
+        detailsRow.hidden = true;
+        detailsRow.innerHTML = `
+          <td colspan="10">
+            <div class="details-cell">
+              <div class="details-grid">
+                <div class="details-item">
+                  <span class="details-label">Response</span>
+                  <pre class="details-json">${escapeHtml(formatPrettyJson(detail.response))}</pre>
+                </div>
+                <div class="details-item">
+                  <span class="details-label">Payload</span>
+                  <pre class="details-json">${escapeHtml(formatPrettyJson(detail.payload))}</pre>
+                </div>
+                <div class="details-item">
+                  <span class="details-label">Meta</span>
+                  <pre class="details-json">${escapeHtml(formatPrettyJson(detail.meta))}</pre>
+                </div>
+              </div>
+            </div>
+          </td>
+        `;
+        els.tableBody.appendChild(detailsRow);
+
+        const toggleBtn = tr.querySelector('[data-detail-toggle]');
+        toggleBtn.addEventListener('click', () => {
+          detailsRow.hidden = !detailsRow.hidden;
+          const open = !detailsRow.hidden;
+          toggleBtn.dataset.open = open ? 'true' : 'false';
+          toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          toggleBtn.setAttribute('aria-label', open ? 'Collapse details' : 'Expand details');
+        });
+
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-top">
+            <div>
+              <div class="card-title">${escapeHtml(detail.message)}</div>
+              <div class="muted">${escapeHtml(fmtTime(item.created))}</div>
+            </div>
+            <span class="badge ${escapeHtml(badgeClass(detail.level))}">${escapeHtml(detail.level)}</span>
+          </div>
+          <div class="chip-row">
+            <span class="chip">${escapeHtml(detail.appName)}</span>
+            <span class="chip">${escapeHtml(detail.platform)}</span>
+            <span class="chip">HTTP ${escapeHtml(detail.statusCode)}</span>
+          </div>
+          <div class="card-grid">
+            <div class="card-item"><span class="k">App version</span><span class="v">${escapeHtml(detail.appVersion)}</span></div>
+            <div class="card-item"><span class="k">Build</span><span class="v">${escapeHtml(detail.buildVersion)}</span></div>
+            <div class="card-item"><span class="k">Route</span><span class="v">${escapeHtml(detail.route)}</span></div>
+            <div class="card-item"><span class="k">Method</span><span class="v">${escapeHtml(detail.method)}</span></div>
+            <div class="card-item"><span class="k">Source</span><span class="v">${escapeHtml(detail.source)}</span></div>
+            <div class="card-item"><span class="k">ID</span><span class="v">${escapeHtml(item.id || '-')}</span></div>
+            <div class="card-item" style="grid-column:1/-1;"><span class="k">Response</span><span class="v">${escapeHtml(formatJson(detail.response))}</span></div>
+            <div class="card-item" style="grid-column:1/-1;"><span class="k">Payload</span><span class="v">${escapeHtml(formatJson(detail.payload))}</span></div>
+          </div>
+        `;
+        els.mobileCards.appendChild(card);
+      });
+    }
+
+    function updateStats(payload) {
+      const total = payload?.pagination?.total_items ?? 0;
+      els.totalItems.textContent = `${total} records`;
+    }
+
+    async function fetchLogs(page = 1) {
+      state.page = page;
+      setLoading(true);
+      setError('');
+      setEmpty(false);
+
+      const url = buildUrl(page);
+      els.lastQueryMeta.textContent = url;
+
+      try {
+        const res = await fetch(url, {
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        }
+
+        const payload = await res.json();
+        if (!payload || payload.status !== true) {
+          throw new Error(payload?.message || 'API returned an invalid status');
+        }
+
+        const rows = Array.isArray(payload.data) ? payload.data : [];
+        state.data = rows;
+        state.pagination = payload.pagination || null;
+
+        renderRows(rows);
+        renderPagination(state.pagination);
+        updateStats(payload);
+
+        const total = payload?.pagination?.total_items ?? rows.length;
+        const current = payload?.pagination?.current_page ?? page;
+        const totalPages = payload?.pagination?.total_pages ?? 1;
+        els.resultMeta.textContent = `Showing page ${current}/${totalPages}`;
+        els.pageNote.textContent = `${state.pageSize} records per page`;
+        setEmpty(rows.length === 0);
+      } catch (err) {
+        console.error(err);
+        setError(`Failed to load data: ${err.message}`);
+        els.resultMeta.textContent = 'Error loading data';
+        els.pageNote.textContent = 'No data yet';
+        els.tableBody.innerHTML = '';
+        els.mobileCards.innerHTML = '';
+        renderPagination(null);
+        updateStats({});
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function readFiltersFromUi() {
+      state.q = els.appName.value || '';
+      state.timeGte = fromDateInputValue(els.timeGte.value, 'start');
+      state.timeLte = fromDateInputValue(els.timeLte.value, 'end');
+    }
+
+    function applyQueryParamsToUi() {
+      const params = new URLSearchParams(window.location.search);
+      els.appName.value = params.get('q') || '';
+      els.timeGte.value = params.get('time_gte') ? toDateInputValue(params.get('time_gte')) : '';
+      els.timeLte.value = params.get('time_lte') ? toDateInputValue(params.get('time_lte')) : '';
+      state.pageSize = Number(params.get('page_size') || DEFAULT_PAGE_SIZE) || DEFAULT_PAGE_SIZE;
+      state.page = Number(params.get('page') || 1) || 1;
+      readFiltersFromUi();
+    }
+
+    function syncUrl(page = 1) {
+      const params = new URLSearchParams();
+      params.set('page', String(page));
+      params.set('page_size', String(state.pageSize));
+      if (state.q.trim()) params.set('q', state.q.trim());
+      if (state.timeGte) params.set('time_gte', state.timeGte);
+      if (state.timeLte) params.set('time_lte', state.timeLte);
+      const nextUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.replaceState({}, '', nextUrl);
+    }
+
+    function runSearch(resetPage = true) {
+      readFiltersFromUi();
+      const page = resetPage ? 1 : state.page;
+      syncUrl(page);
+      fetchLogs(page);
+    }
+
+    els.searchBtn.addEventListener('click', () => runSearch(true));
+    els.resetBtn.addEventListener('click', () => {
+      els.appName.value = '';
+      els.timeGte.value = '';
+      els.timeLte.value = '';
+      state.q = '';
+      state.timeGte = '';
+      state.timeLte = '';
+      runSearch(true);
+    });
+    els.refreshBtn.addEventListener('click', () => fetchLogs(state.page));
+
+    [els.appName, els.timeGte, els.timeLte].forEach(input => {
+      input.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          runSearch(true);
+        }
+      });
+    });
+
+    window.addEventListener('popstate', () => {
+      applyQueryParamsToUi();
+      fetchLogs(state.page);
+    });
+
+    applyQueryParamsToUi();
+    syncUrl(state.page);
+    fetchLogs(state.page);
+  </script>
+</body>
+</html>
