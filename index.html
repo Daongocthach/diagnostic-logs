@@ -80,11 +80,49 @@
       flex-shrink: 0;
     }
 
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 0 22px 18px;
+    }
+
+    .tab-button {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--text);
+      box-shadow: none;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .tab-button.active {
+      background: linear-gradient(135deg, #202633, #111827);
+      color: #ffffff;
+      border-color: transparent;
+    }
+
+    .tab-panel[hidden] {
+      display: none !important;
+    }
+
     .filters {
       display: grid;
       grid-template-columns: 1.15fr 1fr 1fr auto auto;
       gap: 18px 16px;
       align-items: end;
+    }
+
+    #logsFilters {
+      grid-template-columns: 1.15fr 1fr 1fr minmax(120px, 0.55fr) auto;
+    }
+
+    #cncFilters {
+      grid-template-columns: minmax(160px, 1fr) minmax(160px, 1fr) minmax(220px, 1fr) auto;
+      gap: 14px 12px;
+      align-items: start;
     }
 
     .field {
@@ -98,7 +136,8 @@
       letter-spacing: 0;
     }
 
-    .field input {
+    .field input,
+    .field select {
       width: 100%;
       padding: 13px 14px;
       border: 1px solid var(--border);
@@ -110,12 +149,32 @@
       font-size: 14px;
     }
 
-    .field input:focus {
+    .field input + select {
+      margin-top: 8px;
+    }
+
+    .field input:focus,
+    .field select:focus {
       border-color: rgba(17, 24, 39, 0.24);
       box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.06);
     }
 
     .field input::placeholder { color: #9ca3af; }
+
+    .page-size-field {
+      max-width: 140px;
+    }
+
+    #cncFilters .field input,
+    #cncFilters .field select {
+      padding: 11px 12px;
+      font-size: 13px;
+    }
+
+    #cncFilters .actions {
+      align-self: end;
+      margin-bottom: 1px;
+    }
 
     .actions {
       display: flex;
@@ -165,6 +224,15 @@
       flex-direction: column;
     }
 
+    .content-shell.is-empty {
+      justify-content: center;
+    }
+
+    .content-shell.is-empty .table-wrap,
+    .content-shell.is-empty .mobile-cards {
+      display: none;
+    }
+
     #content {
       display: flex;
       flex: 1;
@@ -206,6 +274,10 @@
       min-width: 1040px;
     }
 
+    .cnc-table {
+      min-width: 2780px;
+    }
+
     thead th {
       text-align: left;
       font-size: 12px;
@@ -217,10 +289,38 @@
       background: transparent;
     }
 
+    .logs-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
+    }
+
     thead th:last-child {
       text-align: right;
       padding-right: 24px;
       width: 84px;
+    }
+
+    .cnc-table thead th:last-child,
+    .cnc-table tbody td:last-child {
+      text-align: left;
+      padding-right: 18px;
+      width: auto;
+    }
+
+    .cnc-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
+      white-space: normal;
+      line-height: 1.35;
+      vertical-align: bottom;
     }
 
     tbody td {
@@ -349,6 +449,14 @@
       color: var(--muted);
     }
 
+    .empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+      width: 100%;
+    }
+
     .error-box {
       color: #b91c1c;
     }
@@ -429,6 +537,46 @@
       word-break: break-word;
     }
 
+    .card-details {
+      margin-top: 4px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(15, 23, 42, 0.10);
+    }
+
+    .card-summary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      list-style: none;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      user-select: none;
+    }
+
+    .card-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .card-summary::after {
+      content: '+';
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: rgba(17, 24, 39, 0.08);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .card-details[open] .card-summary::after {
+      content: '−';
+    }
+
     .route-cell {
       max-width: 340px;
       white-space: normal;
@@ -493,8 +641,16 @@
 
     .details-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
+    }
+
+    .details-grid--meta {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .details-cell .details-grid + .details-grid {
+      margin-top: 12px;
     }
 
     .details-item {
@@ -504,6 +660,15 @@
       background: rgba(15, 23, 42, 0.03);
       min-width: 0;
       text-align: left;
+    }
+
+    .details-value {
+      display: block;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 600;
+      color: #111827;
+      word-break: break-word;
     }
 
     .details-label {
@@ -529,6 +694,8 @@
     @media (max-width: 980px) {
       .filters { grid-template-columns: 1fr 1fr; }
       .actions { grid-column: 1 / -1; }
+      .tabs { padding-left: 16px; padding-right: 16px; }
+      .details-grid--meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     @media (max-width: 720px) {
@@ -540,11 +707,14 @@
         padding-left: 14px;
         padding-right: 14px;
       }
+      .tabs { padding: 0 14px 14px; }
       .table-wrap { display: none; }
+      .table-wrap--cnc { display: block; }
       .mobile-cards { display: grid; }
       .card-grid { grid-template-columns: 1fr; }
       .panel-head { align-items: flex-start; flex-direction: column; }
       .details-grid { grid-template-columns: 1fr; }
+      .details-grid--meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     @media (min-width: 721px) {
@@ -593,15 +763,20 @@
     <section class="hero">
       <div class="title-row">
         <div>
-          <h1>Finepro - System Error Logs</h1>
-          <p class="subtitle">Browse mobile errors by `appName`, filter by date range, and paginate in a single HTML file.</p>
+          <h1>Finepro - Operations Viewer</h1>
+          <p class="subtitle">Switch between system error logs and CNC history in one page.</p>
         </div>
         <div class="top-actions">
           <button id="refreshBtn" class="ghost">Refresh</button>
         </div>
       </div>
 
-      <div class="filters">
+      <div class="tabs" role="tablist" aria-label="Data views">
+        <button class="tab-button active" id="logsTabBtn" type="button" role="tab" aria-selected="true" aria-controls="logsPanel">System Error Logs</button>
+        <button class="tab-button" id="cncTabBtn" type="button" role="tab" aria-selected="false" aria-controls="cncPanel">CNC History</button>
+      </div>
+
+      <div class="filters tab-panel" id="logsFilters">
         <div class="field">
           <label for="appName">App name</label>
           <input id="appName" type="text" placeholder="Fineprojects" />
@@ -614,14 +789,42 @@
           <label for="timeLte">End date</label>
           <input id="timeLte" type="date" />
         </div>
+        <div class="field page-size-field">
+          <label for="logsPageSize">Page size</label>
+          <select id="logsPageSize">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
         <div class="actions">
           <button id="searchBtn">Search</button>
           <button id="resetBtn" class="ghost">Clear filters</button>
         </div>
       </div>
+
+      <div class="filters tab-panel" id="cncFilters" hidden>
+        <div class="field">
+          <label for="dayStart">Day start</label>
+          <input id="dayStart" type="date" />
+        </div>
+        <div class="field">
+          <label for="dayEnd">Day end</label>
+          <input id="dayEnd" type="date" />
+        </div>
+        <div class="field">
+          <label for="productType">Product type</label>
+          <select id="productType"></select>
+        </div>
+        <div class="actions">
+          <button id="cncSearchBtn">Search CNC</button>
+          <button id="cncResetBtn" class="ghost">Clear filters</button>
+        </div>
+      </div>
     </section>
 
-    <section class="panel">
+    <section class="panel tab-panel" id="logsPanel">
       <div class="panel-head">
         <div>
           <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
@@ -641,18 +844,14 @@
         <div class="empty" id="emptyBox" style="display:none;">No matching data found.</div>
 
         <div class="table-wrap">
-          <table>
+          <table class="logs-table">
             <thead>
               <tr>
                 <th>Time</th>
                 <th>App</th>
-                <th>Version</th>
-                <th>Platform</th>
-                <th>Level</th>
                 <th>Message</th>
                 <th>Route</th>
                 <th>Status</th>
-                <th>ID</th>
                 <th>Details</th>
               </tr>
             </thead>
@@ -668,18 +867,113 @@
         <div class="pager" id="pager"></div>
       </div>
     </section>
+
+    <section class="panel tab-panel" id="cncPanel" hidden>
+      <div class="panel-head">
+        <div>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <h2>CNC history</h2>
+            <span class="badge" id="cncTotalItems">0 records</span>
+          </div>
+          <div class="meta" id="cncResultMeta">Waiting for query</div>
+        </div>
+        <div class="meta" id="cncLastQueryMeta"></div>
+      </div>
+
+      <div id="cncContent" class="content-shell">
+        <div class="loading" id="cncLoadingBox" style="display:none;">
+          <span class="spinner"></span>Loading CNC data...
+        </div>
+        <div class="error-box" id="cncErrorBox" style="display:none;"></div>
+        <div class="empty" id="cncEmptyBox" style="display:none;">No matching CNC data found.</div>
+
+        <div class="table-wrap table-wrap--cnc">
+          <table class="cnc-table">
+            <thead>
+              <tr id="cncTableHead"></tr>
+            </thead>
+            <tbody id="cncTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="pagination">
+        <div class="footer-note" id="cncPageNote">No data yet</div>
+        <div class="pager" id="cncPager"></div>
+      </div>
+    </section>
   </main>
 
   <script>
     const API_BASE = 'https://apifinetags.finepro.net/api/v1/mobile_error_logs/';
+    const CNC_API_URL = 'http://192.168.8.127:7000/api/v1/machining_update1/machining_data';
+    const CNC_PRODUCTS_API_URL = 'http://192.168.8.127:7000/api/v1/machining_update1/products';
+    const DEFAULT_PRODUCT_TYPE = 'A2502179';
+    const CNC_DEFAULT_TIME_START = '00:00';
+    const CNC_DEFAULT_TIME_END = '23:59';
     const DEFAULT_PAGE_SIZE = 10;
+    const CNC_OPERATION_COUNT = 7;
+    const CNC_COLUMNS = [
+      'Product',
+      'DMC Product',
+      'DMC Tray',
+      'Line',
+      'Machine OP1',
+      'Worker Code OP1',
+      'Worker Name OP1',
+      'Time In OP1',
+      'Time Out OP1',
+      'Machine OP2',
+      'Worker Code OP2',
+      'Worker Name OP2',
+      'Time In OP2',
+      'Time Out OP2',
+      'Machine OP3',
+      'Worker Code OP3',
+      'Worker Name OP3',
+      'Time In OP3',
+      'Time Out OP3',
+      'Machine OP4',
+      'Worker Code OP4',
+      'Worker Name OP4',
+      'Time In OP4',
+      'Time Out OP4',
+      'Machine OP5',
+      'Worker Code OP5',
+      'Worker Name OP5',
+      'Time In OP5',
+      'Time Out OP5',
+      'Machine OP6',
+      'Worker Code OP6',
+      'Worker Name OP6',
+      'Time In OP6',
+      'Time Out OP6',
+      'Machine OP7',
+      'Worker Code OP7',
+      'Worker Name OP7',
+      'Time In OP7',
+      'Time Out OP7',
+      'Status',
+    ];
 
     const els = {
+      logsTabBtn: document.getElementById('logsTabBtn'),
+      cncTabBtn: document.getElementById('cncTabBtn'),
+      logsPanel: document.getElementById('logsPanel'),
+      cncPanel: document.getElementById('cncPanel'),
+      logsFilters: document.getElementById('logsFilters'),
+      cncFilters: document.getElementById('cncFilters'),
       appName: document.getElementById('appName'),
       timeGte: document.getElementById('timeGte'),
       timeLte: document.getElementById('timeLte'),
+      logsPageSize: document.getElementById('logsPageSize'),
       searchBtn: document.getElementById('searchBtn'),
       resetBtn: document.getElementById('resetBtn'),
+      dayStart: document.getElementById('dayStart'),
+      dayEnd: document.getElementById('dayEnd'),
+      productType: document.getElementById('productType'),
+      cncSearchBtn: document.getElementById('cncSearchBtn'),
+      cncResetBtn: document.getElementById('cncResetBtn'),
       refreshBtn: document.getElementById('refreshBtn'),
       tableBody: document.getElementById('tableBody'),
       mobileCards: document.getElementById('mobileCards'),
@@ -691,9 +985,20 @@
       resultMeta: document.getElementById('resultMeta'),
       lastQueryMeta: document.getElementById('lastQueryMeta'),
       totalItems: document.getElementById('totalItems'),
+      cncTableHead: document.getElementById('cncTableHead'),
+      cncTableBody: document.getElementById('cncTableBody'),
+      cncLoadingBox: document.getElementById('cncLoadingBox'),
+      cncErrorBox: document.getElementById('cncErrorBox'),
+      cncEmptyBox: document.getElementById('cncEmptyBox'),
+      cncPager: document.getElementById('cncPager'),
+      cncPageNote: document.getElementById('cncPageNote'),
+      cncResultMeta: document.getElementById('cncResultMeta'),
+      cncLastQueryMeta: document.getElementById('cncLastQueryMeta'),
+      cncTotalItems: document.getElementById('cncTotalItems'),
     };
 
     const state = {
+      activeTab: 'logs',
       page: 1,
       pageSize: DEFAULT_PAGE_SIZE,
       q: '',
@@ -701,6 +1006,16 @@
       timeLte: '',
       data: [],
       pagination: null,
+      cnc: {
+        dayStart: '',
+        dayEnd: '',
+        productType: '',
+        page: 1,
+        productTypes: [],
+        data: [],
+        totalRecords: 0,
+        maxOperations: CNC_OPERATION_COUNT,
+      },
     };
 
     function parseDateValue(input) {
@@ -719,6 +1034,11 @@
       return Number.isNaN(date.getTime()) ? null : date;
     }
 
+    function toLocalDateInputValue(date = new Date()) {
+      const pad = n => String(n).padStart(2, '0');
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    }
+
     function escapeHtml(value) {
       return String(value ?? '')
         .replaceAll('&', '&amp;')
@@ -732,10 +1052,7 @@
       const date = parseDateValue(input);
       if (!date) return '';
       const pad = n => String(n).padStart(2, '0');
-      const year = date.getFullYear();
-      const month = pad(date.getMonth() + 1);
-      const day = pad(date.getDate());
-      return `${year}-${month}-${day}`;
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
     }
 
     function fromDateInputValue(value, boundary) {
@@ -751,20 +1068,45 @@
       return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
     }
 
-    function setLoading(isLoading) {
-      els.loadingBox.style.display = isLoading ? 'block' : 'none';
-      els.searchBtn.disabled = isLoading;
-      els.resetBtn.disabled = isLoading;
+    function getTodayInputValue() {
+      return toLocalDateInputValue(new Date());
+    }
+
+    function getDaysAgoInputValue(daysAgo) {
+      const date = new Date();
+      date.setDate(date.getDate() - daysAgo);
+      return toLocalDateInputValue(date);
+    }
+
+    function setLoadingBox(target, isLoading) {
+      target.style.display = isLoading ? 'block' : 'none';
+    }
+
+    function setLoadingState(tab, isLoading) {
+      if (tab === 'cnc') {
+        setLoadingBox(els.cncLoadingBox, isLoading);
+        els.cncSearchBtn.disabled = isLoading;
+        els.cncResetBtn.disabled = isLoading;
+      } else {
+        setLoadingBox(els.loadingBox, isLoading);
+        els.searchBtn.disabled = isLoading;
+        els.resetBtn.disabled = isLoading;
+        els.logsPageSize.disabled = isLoading;
+      }
       els.refreshBtn.disabled = isLoading;
     }
 
-    function setError(message) {
-      els.errorBox.textContent = message;
-      els.errorBox.style.display = message ? 'block' : 'none';
+    function setErrorBox(target, message) {
+      target.textContent = message;
+      target.style.display = message ? 'block' : 'none';
     }
 
-    function setEmpty(isEmpty) {
-      els.emptyBox.style.display = isEmpty ? 'block' : 'none';
+    function setEmptyBox(target, isEmpty) {
+      target.style.display = isEmpty ? 'flex' : 'none';
+      const shell = target.closest('.content-shell');
+      if (shell) {
+        shell.classList.toggle('is-empty', isEmpty);
+      }
     }
 
     function buildUrl(page = 1) {
@@ -775,6 +1117,69 @@
       if (state.timeGte) url.searchParams.set('time_gte', state.timeGte);
       if (state.timeLte) url.searchParams.set('time_lte', state.timeLte);
       return url.toString();
+    }
+
+    function buildCncBody() {
+      return {
+        dayStart: state.cnc.dayStart,
+        dayEnd: state.cnc.dayEnd,
+        timeStart: CNC_DEFAULT_TIME_START,
+        timeEnd: CNC_DEFAULT_TIME_END,
+        productType: state.cnc.productType,
+      };
+    }
+
+    function renderProductTypeOptions(values) {
+      els.productType.innerHTML = '';
+
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'Select product type';
+      placeholder.disabled = true;
+      placeholder.hidden = true;
+      els.productType.appendChild(placeholder);
+
+      const options = values.includes(DEFAULT_PRODUCT_TYPE)
+        ? values.slice()
+        : [DEFAULT_PRODUCT_TYPE, ...values];
+
+      options.forEach(value => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = value;
+        els.productType.appendChild(option);
+      });
+    }
+
+    async function fetchProductTypes() {
+      try {
+        const res = await fetch(CNC_PRODUCTS_API_URL, {
+          headers: { Accept: 'application/json' },
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        }
+
+        const payload = await res.json();
+        if (!payload || payload.status !== true) {
+          throw new Error(payload?.message || 'API returned an invalid status');
+        }
+
+        const values = Array.isArray(payload.data) ? payload.data.filter(Boolean).map(String) : [];
+        state.cnc.productTypes = values;
+        renderProductTypeOptions(values);
+
+        const currentValue = String(els.productType.value || '').trim();
+        if (!currentValue) {
+          els.productType.value = DEFAULT_PRODUCT_TYPE;
+        }
+        readCncFiltersFromUi();
+        return values;
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
     }
 
     function normalizeErrorDetail(detail = {}) {
@@ -822,6 +1227,11 @@
       }
     }
 
+    function formatCncValue(value) {
+      if (value == null || value === '') return '-';
+      return String(value);
+    }
+
     function fmtTime(value) {
       if (!value) return '-';
       const date = new Date(value);
@@ -836,14 +1246,32 @@
       }).format(date);
     }
 
-    function renderPagination(pagination) {
-      els.pager.innerHTML = '';
-      if (!pagination || !pagination.total_pages) return;
+    function syncPageSizeControls() {
+      const value = String(state.pageSize || DEFAULT_PAGE_SIZE);
+      if (els.logsPageSize) els.logsPageSize.value = value;
+    }
 
-      const current = Number(pagination.current_page || 1);
-      const total = Number(pagination.total_pages || 1);
+    function setPageSize(nextSize) {
+      const size = Number(nextSize);
+      const normalized = Number.isFinite(size) && size > 0 ? size : DEFAULT_PAGE_SIZE;
+      state.pageSize = normalized;
+      state.page = 1;
+      state.cnc.page = 1;
+      syncPageSizeControls();
+      syncUrl(1);
+
+      if (state.activeTab === 'cnc') {
+        renderCncView();
+      } else {
+        fetchLogs(1);
+      }
+    }
+
+    function renderPager(container, current, total, onPage) {
+      container.innerHTML = '';
+      if (!total || total < 1) return;
+
       const pages = [];
-
       const add = page => {
         if (!pages.includes(page) && page >= 1 && page <= total) pages.push(page);
       };
@@ -862,32 +1290,47 @@
           const gap = document.createElement('span');
           gap.className = 'meta';
           gap.textContent = '...';
-          els.pager.appendChild(gap);
+          container.appendChild(gap);
         }
+
         const btn = document.createElement('button');
         btn.className = 'page-btn' + (page === current ? ' active' : '');
         btn.textContent = page;
         btn.disabled = page === current;
-        btn.addEventListener('click', () => fetchLogs(page));
-        els.pager.appendChild(btn);
+        btn.addEventListener('click', () => onPage(page));
+        container.appendChild(btn);
         last = page;
       });
 
-        if (pagination.previous_page) {
+      if (current > 1) {
         const prev = document.createElement('button');
         prev.className = 'page-btn';
         prev.textContent = 'Prev';
-        prev.addEventListener('click', () => fetchLogs(current - 1));
-        els.pager.prepend(prev);
+        prev.addEventListener('click', () => onPage(current - 1));
+        container.prepend(prev);
       }
 
-      if (pagination.next_page) {
+      if (current < total) {
         const next = document.createElement('button');
         next.className = 'page-btn';
         next.textContent = 'Next';
-        next.addEventListener('click', () => fetchLogs(current + 1));
-        els.pager.appendChild(next);
+        next.addEventListener('click', () => onPage(current + 1));
+        container.appendChild(next);
       }
+    }
+
+    function renderPagination(pagination) {
+      if (!pagination || !pagination.total_pages) {
+        els.pager.innerHTML = '';
+        return;
+      }
+
+      const current = Number(pagination.current_page || 1);
+      const total = Number(pagination.total_pages || 1);
+      renderPager(els.pager, current, total, page => {
+        syncUrl(page);
+        fetchLogs(page);
+      });
     }
 
     function renderRows(items) {
@@ -901,16 +1344,12 @@
         tr.innerHTML = `
           <td>${escapeHtml(fmtTime(item.created))}</td>
           <td><strong>${escapeHtml(detail.appName)}</strong></td>
-          <td>${escapeHtml(detail.appVersion)}<div class="muted">Build ${escapeHtml(detail.buildVersion)}</div></td>
-          <td><span class="badge ${escapeHtml(badgeClass(detail.platform))}">${escapeHtml(detail.platform)}</span></td>
-          <td><span class="badge ${escapeHtml(badgeClass(detail.level))}">${escapeHtml(detail.level)}</span></td>
           <td>
             <div class="message">${escapeHtml(detail.message)}</div>
             <div class="muted">Source: ${escapeHtml(detail.source)} · Method: ${escapeHtml(detail.method)}</div>
           </td>
           <td class="route-cell" title="${escapeHtml(detail.route)}">${escapeHtml(detail.route)}</td>
           <td>${escapeHtml(detail.statusCode)}</td>
-          <td class="truncate" title="${escapeHtml(item.id)}">${escapeHtml(item.id || '-')}</td>
           <td class="details-cell-action">
             <button class="detail-toggle" type="button" data-detail-toggle="1" aria-label="Expand details" aria-expanded="false">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -925,8 +1364,26 @@
         detailsRow.className = 'details-row';
         detailsRow.hidden = true;
         detailsRow.innerHTML = `
-          <td colspan="10">
+          <td colspan="6">
             <div class="details-cell">
+              <div class="details-grid details-grid--meta">
+                <div class="details-item">
+                  <span class="details-label">Version</span>
+                  <span class="details-value">${escapeHtml(detail.appVersion)}</span>
+                </div>
+                <div class="details-item">
+                  <span class="details-label">Build</span>
+                  <span class="details-value">${escapeHtml(detail.buildVersion)}</span>
+                </div>
+                <div class="details-item">
+                  <span class="details-label">Platform</span>
+                  <span class="details-value">${escapeHtml(detail.platform)}</span>
+                </div>
+                <div class="details-item">
+                  <span class="details-label">Level</span>
+                  <span class="details-value">${escapeHtml(detail.level)}</span>
+                </div>
+              </div>
               <div class="details-grid">
                 <div class="details-item">
                   <span class="details-label">Response</span>
@@ -935,10 +1392,6 @@
                 <div class="details-item">
                   <span class="details-label">Payload</span>
                   <pre class="details-json">${escapeHtml(formatPrettyJson(detail.payload))}</pre>
-                </div>
-                <div class="details-item">
-                  <span class="details-label">Meta</span>
-                  <pre class="details-json">${escapeHtml(formatPrettyJson(detail.meta))}</pre>
                 </div>
               </div>
             </div>
@@ -963,23 +1416,39 @@
               <div class="card-title">${escapeHtml(detail.message)}</div>
               <div class="muted">${escapeHtml(fmtTime(item.created))}</div>
             </div>
-            <span class="badge ${escapeHtml(badgeClass(detail.level))}">${escapeHtml(detail.level)}</span>
+            <span class="badge">HTTP ${escapeHtml(detail.statusCode)}</span>
           </div>
           <div class="chip-row">
             <span class="chip">${escapeHtml(detail.appName)}</span>
-            <span class="chip">${escapeHtml(detail.platform)}</span>
-            <span class="chip">HTTP ${escapeHtml(detail.statusCode)}</span>
           </div>
           <div class="card-grid">
-            <div class="card-item"><span class="k">App version</span><span class="v">${escapeHtml(detail.appVersion)}</span></div>
-            <div class="card-item"><span class="k">Build</span><span class="v">${escapeHtml(detail.buildVersion)}</span></div>
             <div class="card-item"><span class="k">Route</span><span class="v">${escapeHtml(detail.route)}</span></div>
             <div class="card-item"><span class="k">Method</span><span class="v">${escapeHtml(detail.method)}</span></div>
             <div class="card-item"><span class="k">Source</span><span class="v">${escapeHtml(detail.source)}</span></div>
-            <div class="card-item"><span class="k">ID</span><span class="v">${escapeHtml(item.id || '-')}</span></div>
             <div class="card-item" style="grid-column:1/-1;"><span class="k">Response</span><span class="v">${escapeHtml(formatJson(detail.response))}</span></div>
             <div class="card-item" style="grid-column:1/-1;"><span class="k">Payload</span><span class="v">${escapeHtml(formatJson(detail.payload))}</span></div>
           </div>
+          <details class="card-details">
+            <summary class="card-summary">Log metadata</summary>
+            <div class="details-grid details-grid--meta">
+              <div class="details-item">
+                <span class="details-label">Version</span>
+                <span class="details-value">${escapeHtml(detail.appVersion)}</span>
+              </div>
+              <div class="details-item">
+                <span class="details-label">Build</span>
+                <span class="details-value">${escapeHtml(detail.buildVersion)}</span>
+              </div>
+              <div class="details-item">
+                <span class="details-label">Platform</span>
+                <span class="details-value">${escapeHtml(detail.platform)}</span>
+              </div>
+              <div class="details-item">
+                <span class="details-label">Level</span>
+                <span class="details-value">${escapeHtml(detail.level)}</span>
+              </div>
+            </div>
+          </details>
         `;
         els.mobileCards.appendChild(card);
       });
@@ -990,11 +1459,173 @@
       els.totalItems.textContent = `${total} records`;
     }
 
+    function renderCncHeader() {
+      els.cncTableHead.innerHTML = '';
+      CNC_COLUMNS.forEach(label => {
+        const th = document.createElement('th');
+        th.textContent = label;
+        els.cncTableHead.appendChild(th);
+      });
+    }
+
+    function renderCncRows(rows) {
+      els.cncTableBody.innerHTML = '';
+
+      rows.forEach(row => {
+        const values = [
+          row.productType,
+          row.dmc,
+          row.dmcTray,
+          row.line,
+        ];
+
+        for (let op = 1; op <= CNC_OPERATION_COUNT; op += 1) {
+          values.push(
+            row[`machineOP${op}`],
+            row[`workerCodeOP${op}`],
+            row[`workerNameOP${op}`],
+            row[`timeInOP${op}`],
+            row[`timeOutOP${op}`],
+          );
+        }
+
+        values.push(row.status);
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = values.map(value => `<td>${escapeHtml(formatCncValue(value))}</td>`).join('');
+        els.cncTableBody.appendChild(tr);
+      });
+    }
+
+    function renderCncView() {
+      const filteredRows = state.cnc.data.slice();
+
+      const pageSize = Number(state.pageSize || DEFAULT_PAGE_SIZE);
+      const totalRows = filteredRows.length;
+      const totalPages = Math.max(1, Math.ceil(totalRows / pageSize));
+
+      if (state.cnc.page > totalPages) {
+        state.cnc.page = totalPages;
+      }
+
+      const currentPage = Math.max(1, state.cnc.page || 1);
+      const start = (currentPage - 1) * pageSize;
+      const pageRows = filteredRows.slice(start, start + pageSize);
+
+      renderCncRows(pageRows);
+      if (totalRows === 0) {
+        els.cncPager.innerHTML = '';
+      } else {
+        renderPager(els.cncPager, currentPage, totalPages, page => {
+          state.cnc.page = page;
+          syncUrl(page);
+          renderCncView();
+        });
+      }
+      setEmptyBox(els.cncEmptyBox, totalRows === 0);
+
+      if (totalRows === 0) {
+        els.cncPageNote.textContent = 'No matching CNC data found.';
+      } else {
+        const from = start + 1;
+        const to = Math.min(start + pageSize, totalRows);
+        els.cncPageNote.textContent = `Showing ${from}-${to} of ${totalRows} rows · ${pageSize} per page`;
+      }
+
+      syncUrl(currentPage);
+    }
+
+    function updateCncStats(payload, rows) {
+      const cncData = payload?.data || {};
+      const totalRecords = cncData.totalRecords ?? rows.length ?? 0;
+      const maxOperations = cncData.maxOperations ?? CNC_OPERATION_COUNT;
+      state.cnc.totalRecords = totalRecords;
+      state.cnc.maxOperations = maxOperations;
+      els.cncTotalItems.textContent = `${totalRecords} records`;
+      els.cncResultMeta.textContent = `Product ${formatCncValue(cncData.productType)} · max operations ${maxOperations}`;
+    }
+
+    function readFiltersFromUi() {
+      state.q = els.appName.value || '';
+      state.timeGte = fromDateInputValue(els.timeGte.value, 'start');
+      state.timeLte = fromDateInputValue(els.timeLte.value, 'end');
+    }
+
+    function readCncFiltersFromUi() {
+      state.cnc.dayStart = els.dayStart.value || '';
+      state.cnc.dayEnd = els.dayEnd.value || '';
+      state.cnc.productType = els.productType.value || '';
+    }
+
+    function applyQueryParamsToUi() {
+      const params = new URLSearchParams(window.location.search);
+      state.activeTab = params.get('tab') === 'cnc' ? 'cnc' : 'logs';
+      els.appName.value = params.get('q') || '';
+      els.timeGte.value = params.get('time_gte') ? toDateInputValue(params.get('time_gte')) : '';
+      els.timeLte.value = params.get('time_lte') ? toDateInputValue(params.get('time_lte')) : '';
+      state.pageSize = Number(params.get('page_size') || DEFAULT_PAGE_SIZE) || DEFAULT_PAGE_SIZE;
+      state.page = Number(params.get('page') || 1) || 1;
+      state.cnc.page = state.activeTab === 'cnc' ? state.page : 1;
+      els.dayStart.value = params.get('dayStart') || getTodayInputValue();
+      els.dayEnd.value = params.get('dayEnd') || getTodayInputValue();
+      els.productType.value = params.get('productType') || '';
+      readFiltersFromUi();
+      readCncFiltersFromUi();
+      syncPageSizeControls();
+    }
+
+    function syncUrl(page = 1) {
+      const params = new URLSearchParams();
+      params.set('tab', state.activeTab);
+      params.set('page', String(page));
+      params.set('page_size', String(state.pageSize));
+      if (state.q.trim()) params.set('q', state.q.trim());
+      if (state.timeGte) params.set('time_gte', state.timeGte);
+      if (state.timeLte) params.set('time_lte', state.timeLte);
+      if (state.activeTab === 'cnc') {
+        if (state.cnc.dayStart) params.set('dayStart', state.cnc.dayStart);
+        if (state.cnc.dayEnd) params.set('dayEnd', state.cnc.dayEnd);
+        if (state.cnc.productType.trim()) params.set('productType', state.cnc.productType.trim());
+      }
+      const nextUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.replaceState({}, '', nextUrl);
+    }
+
+    function setActiveTab(tab) {
+      state.activeTab = tab;
+      const logsActive = tab === 'logs';
+      els.logsTabBtn.classList.toggle('active', logsActive);
+      els.cncTabBtn.classList.toggle('active', !logsActive);
+      els.logsTabBtn.setAttribute('aria-selected', logsActive ? 'true' : 'false');
+      els.cncTabBtn.setAttribute('aria-selected', logsActive ? 'false' : 'true');
+      els.logsPanel.hidden = !logsActive;
+      els.cncPanel.hidden = logsActive;
+      els.logsFilters.hidden = !logsActive;
+      els.cncFilters.hidden = logsActive;
+      els.refreshBtn.textContent = logsActive ? 'Refresh' : 'Refresh CNC';
+    }
+
+    function runSearch(resetPage = true) {
+      readFiltersFromUi();
+      state.activeTab = 'logs';
+      const page = resetPage ? 1 : state.page;
+      syncUrl(page);
+      fetchLogs(page);
+    }
+
+    function runCncSearch() {
+      readCncFiltersFromUi();
+      state.activeTab = 'cnc';
+      state.cnc.page = 1;
+      syncUrl(1);
+      fetchCncHistory();
+    }
+
     async function fetchLogs(page = 1) {
       state.page = page;
-      setLoading(true);
-      setError('');
-      setEmpty(false);
+      setLoadingState('logs', true);
+      setErrorBox(els.errorBox, '');
+      setEmptyBox(els.emptyBox, false);
 
       const url = buildUrl(page);
       els.lastQueryMeta.textContent = url;
@@ -1002,7 +1633,7 @@
       try {
         const res = await fetch(url, {
           headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
           },
         });
 
@@ -1023,15 +1654,14 @@
         renderPagination(state.pagination);
         updateStats(payload);
 
-        const total = payload?.pagination?.total_items ?? rows.length;
         const current = payload?.pagination?.current_page ?? page;
         const totalPages = payload?.pagination?.total_pages ?? 1;
         els.resultMeta.textContent = `Showing page ${current}/${totalPages}`;
         els.pageNote.textContent = `${state.pageSize} records per page`;
-        setEmpty(rows.length === 0);
+        setEmptyBox(els.emptyBox, rows.length === 0);
       } catch (err) {
         console.error(err);
-        setError(`Failed to load data: ${err.message}`);
+        setErrorBox(els.errorBox, `Failed to load data: ${err.message}`);
         els.resultMeta.textContent = 'Error loading data';
         els.pageNote.textContent = 'No data yet';
         els.tableBody.innerHTML = '';
@@ -1039,43 +1669,98 @@
         renderPagination(null);
         updateStats({});
       } finally {
-        setLoading(false);
+        setLoadingState('logs', false);
       }
     }
 
-    function readFiltersFromUi() {
-      state.q = els.appName.value || '';
-      state.timeGte = fromDateInputValue(els.timeGte.value, 'start');
-      state.timeLte = fromDateInputValue(els.timeLte.value, 'end');
+    async function fetchCncHistory() {
+      readCncFiltersFromUi();
+      setLoadingState('cnc', true);
+      setErrorBox(els.cncErrorBox, '');
+      setEmptyBox(els.cncEmptyBox, false);
+
+      const body = buildCncBody();
+      els.cncLastQueryMeta.textContent = `POST ${CNC_API_URL}`;
+
+      try {
+        const res = await fetch(CNC_API_URL, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        }
+
+        const payload = await res.json();
+        if (!payload || payload.status !== true) {
+          throw new Error(payload?.message || 'API returned an invalid status');
+        }
+
+        const cncData = payload.data || {};
+        const rows = Array.isArray(cncData.table) ? cncData.table : [];
+        state.cnc.data = rows;
+
+        renderCncView();
+        updateCncStats(payload, rows);
+      } catch (err) {
+        console.error(err);
+        setErrorBox(els.cncErrorBox, `Failed to load CNC history: ${err.message}`);
+        els.cncResultMeta.textContent = 'Error loading CNC data';
+        els.cncPageNote.textContent = 'No data yet';
+        els.cncTableBody.innerHTML = '';
+        els.cncTotalItems.textContent = '0 records';
+      } finally {
+        setLoadingState('cnc', false);
+      }
     }
 
-    function applyQueryParamsToUi() {
-      const params = new URLSearchParams(window.location.search);
-      els.appName.value = params.get('q') || '';
-      els.timeGte.value = params.get('time_gte') ? toDateInputValue(params.get('time_gte')) : '';
-      els.timeLte.value = params.get('time_lte') ? toDateInputValue(params.get('time_lte')) : '';
-      state.pageSize = Number(params.get('page_size') || DEFAULT_PAGE_SIZE) || DEFAULT_PAGE_SIZE;
-      state.page = Number(params.get('page') || 1) || 1;
-      readFiltersFromUi();
+    function ensureCncDefaults() {
+      const today = getTodayInputValue();
+      const threeDaysAgo = getDaysAgoInputValue(3);
+      if (!els.dayStart.value) els.dayStart.value = threeDaysAgo;
+      if (!els.dayEnd.value) els.dayEnd.value = today;
     }
 
-    function syncUrl(page = 1) {
-      const params = new URLSearchParams();
-      params.set('page', String(page));
-      params.set('page_size', String(state.pageSize));
-      if (state.q.trim()) params.set('q', state.q.trim());
-      if (state.timeGte) params.set('time_gte', state.timeGte);
-      if (state.timeLte) params.set('time_lte', state.timeLte);
-      const nextUrl = `${window.location.pathname}?${params.toString()}`;
-      window.history.replaceState({}, '', nextUrl);
+    function ensureDefaultProductType() {
+      const currentValue = String(els.productType.value || '').trim();
+      if (!currentValue) {
+        els.productType.value = DEFAULT_PRODUCT_TYPE;
+      }
+      readCncFiltersFromUi();
     }
 
-    function runSearch(resetPage = true) {
-      readFiltersFromUi();
-      const page = resetPage ? 1 : state.page;
-      syncUrl(page);
-      fetchLogs(page);
-    }
+    renderCncHeader();
+    applyQueryParamsToUi();
+    ensureCncDefaults();
+    syncPageSizeControls();
+    setActiveTab(state.activeTab);
+    syncUrl(state.activeTab === 'cnc' ? state.cnc.page : state.page);
+
+    (async () => {
+      await fetchProductTypes();
+      ensureDefaultProductType();
+      syncUrl(state.activeTab === 'cnc' ? state.cnc.page : state.page);
+      if (state.activeTab === 'cnc') {
+        fetchCncHistory();
+      }
+    })();
+    els.logsTabBtn.addEventListener('click', () => {
+      setActiveTab('logs');
+      syncUrl(state.page);
+      fetchLogs(state.page);
+    });
+
+    els.cncTabBtn.addEventListener('click', () => {
+      setActiveTab('cnc');
+      state.cnc.page = 1;
+      syncUrl(1);
+      fetchCncHistory();
+    });
 
     els.searchBtn.addEventListener('click', () => runSearch(true));
     els.resetBtn.addEventListener('click', () => {
@@ -1087,7 +1772,30 @@
       state.timeLte = '';
       runSearch(true);
     });
-    els.refreshBtn.addEventListener('click', () => fetchLogs(state.page));
+
+    els.logsPageSize.addEventListener('change', event => {
+      setPageSize(event.target.value);
+    });
+
+    els.cncSearchBtn.addEventListener('click', () => runCncSearch());
+    els.cncResetBtn.addEventListener('click', () => {
+      els.dayStart.value = getDaysAgoInputValue(3);
+      els.dayEnd.value = getTodayInputValue();
+      els.productType.value = DEFAULT_PRODUCT_TYPE;
+      runCncSearch();
+    });
+
+    els.productType.addEventListener('change', () => {
+      readCncFiltersFromUi();
+    });
+
+    els.refreshBtn.addEventListener('click', () => {
+      if (state.activeTab === 'cnc') {
+        fetchCncHistory();
+      } else {
+        fetchLogs(state.page);
+      }
+    });
 
     [els.appName, els.timeGte, els.timeLte].forEach(input => {
       input.addEventListener('keydown', event => {
@@ -1098,14 +1806,28 @@
       });
     });
 
-    window.addEventListener('popstate', () => {
-      applyQueryParamsToUi();
-      fetchLogs(state.page);
+    [els.dayStart, els.dayEnd, els.productType].forEach(input => {
+      input.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          runCncSearch();
+        }
+      });
     });
 
-    applyQueryParamsToUi();
-    syncUrl(state.page);
-    fetchLogs(state.page);
+    window.addEventListener('popstate', () => {
+      applyQueryParamsToUi();
+      setActiveTab(state.activeTab);
+      if (state.activeTab === 'cnc') {
+        fetchCncHistory();
+      } else {
+        fetchLogs(state.page);
+      }
+    });
+
+    if (state.activeTab === 'logs') {
+      fetchLogs(state.page);
+    }
   </script>
 </body>
 </html>
